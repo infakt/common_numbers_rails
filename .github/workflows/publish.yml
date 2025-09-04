@@ -1,0 +1,68 @@
+name: Publish ruby gem
+on:
+  release:
+    types: [created]
+jobs:
+  version-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Get gemspec version
+        id: get-gemspec-version
+        run: |
+          version=$(ruby -e "
+            require 'rubygems'
+            spec = Gem::Specification::load(Dir.glob('*.gemspec').first)
+            version = spec.version.to_s
+            # Validate semver format (MAJOR.MINOR.PATCH)
+            unless version =~ /^\d+\.\d+\.\d+$/
+              puts \"Error: Version '#{version}' is not a valid semantic version (MAJOR.MINOR.PATCH)\"
+              exit 1
+            end
+            puts version
+          ")
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Get release version
+        id: get-release-version
+        run: |
+          version=${{ github.event.release.tag_name }}
+          # Remove 'v' prefix if present
+          version=${version#v}
+          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Check versions match
+        run: |
+          gem_version="${{ steps.get-gemspec-version.outputs.version }}"
+          rel_version="${{ steps.get-release-version.outputs.version }}"
+          if [ "$gem_version" = "$rel_version" ]; then
+            echo "Versions match: $gem_version"
+          else
+            echo "Version mismatch! Gemspec: $gem_version, Release: $rel_version"
+            exit 1
+          fi
+
+  publish:
+    needs: version-check
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Build gem
+        run: gem build *.gemspec
+      - name: Publish to GitHub Packages
+        run: |
+          gem push --key github --host https://rubygems.pkg.github.com/infakt *.gem
+        env:
+          GEM_HOST_API_KEY: "Bearer ${{secrets.GITHUB_TOKEN}}"

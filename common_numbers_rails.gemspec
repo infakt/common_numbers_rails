@@ -1,27 +1,31 @@
-# -*- encoding: utf-8 -*-
-
-$LOAD_PATH.push File.expand_path('../lib', __FILE__)
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'common_numbers_rails/version'
 
-Gem::Specification.new do |s|
-  s.name        = 'common_numbers_rails'
-  s.version     = CommonNumbersRails::VERSION
-  s.platform    = Gem::Platform::RUBY
-  s.authors     = ['Mariusz Nosinski']
-  s.email       = ['marioosh@5dots.pl']
-  s.homepage    = 'https://github.com/marioosh/common_numbers_rails'
-  s.summary     = 'Rails 3 validators for common numbers like PESEL, NIP, REGON'
-  s.description = 'Rails 3 validators for common numbers like PESEL, NIP, REGON'
+Gem::Specification.new do |spec|
+  spec.name        = 'common_numbers_rails'
+  spec.version     = CommonNumbersRails::VERSION
+  spec.authors     = ['Mariusz Nosinski', 'inFakt DevTeam']
+  spec.email       = ['marioosh@5dots.pl', 'p@infakt.pl']
+  spec.homepage    = 'https://github.com/infakt/common_numbers_rails'
+  spec.summary     = 'Rails validators for common numbers like PESEL, NIP, REGON'
+  spec.description = 'Rails validators for common numbers like PESEL, NIP, REGON'
 
-  s.add_dependency 'common_numbers', '>= 0.1.5'
+  spec.metadata['github_repo'] = 'ssh://github.com/infakt/infakt_common_config'
+  spec.metadata['allowed_push_host'] = 'https://rubygems.pkg.github.com/infakt'
 
-  s.add_runtime_dependency 'activemodel', '>= 3.0.0'
-  s.add_runtime_dependency 'activesupport', '>= 3.0.0'
+  spec.files         = `git ls-files`.split("\n")
+  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.require_paths = ['lib']
 
-  s.rubyforge_project = 'common_numbers_rails'
+  spec.add_dependency 'common_numbers', '>= 0.1.5'
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
-  s.require_paths = ['lib']
+  spec.add_development_dependency 'bundler', '>= 2.5'
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec'
+
+  spec.add_runtime_dependency 'activemodel', '>= 3.0.0'
+  spec.add_runtime_dependency 'activesupport', '>= 3.0.0'
 end

@@ -7,17 +7,18 @@ This gem is wrapper on [common_numbers](http://github.com/marioosh/common_number
 - REGON (Polish Company Identification Number)
 
 in the future:
+
 - VIN
 - EAN
 - IBAN
 
-###Instalation
+### Instalation
 
 In your Gemfile add:
-    
+
     gem 'common_numbers_rails'
 
-###Example:
+### Example:
 
 For standalone model use [common_numbers](http://github.com/marioosh/common_numbers) library
 
@@ -28,7 +29,7 @@ For ActiveRecord Models:
       validates :pesel, :pesel => true
       validates :regon, :regon => true
     end
-    
+
 You can also use helpers:
 
     class Item < ActiveRecord::Base
@@ -36,11 +37,6 @@ You can also use helpers:
       validates_pesel_of :pesel_field, :message => "Our custom message"
     end
 
-
-###TODO:
+### TODO:
 
 - validators for other numbers
-
-
-Copyright (c) 2011 Mariusz Nosiński, released under the MIT license
-
